@@ -1,86 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import WeatherCard from "./components/WeatherCard";
-import WeeklyForecast from "./components/WeeklyForecast"; // Add this for weekly forecast
+import WeeklyForecast from "./components/WeeklyForecast"; 
 
 const App = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
-  const [weeklyForecast, setWeeklyForecast] = useState(null); // State for weekly forecast
+  const [weeklyForecast, setWeeklyForecast] = useState(null); 
   const [error, setError] = useState(null);
-  const [darkMode, setDarkMode] = useState(false); // Dark Mode state
+  const [darkMode, setDarkMode] = useState(false); 
 
-  // Load recent searches from local storage
   const getRecentSearches = () => JSON.parse(localStorage.getItem("recentSearches")) || [];
 
-  // Save recent searches to local storage
   const saveToLocalStorage = (cityName) => {
     const searches = getRecentSearches();
     if (!searches.includes(cityName)) {
       searches.unshift(cityName);
-      if (searches.length > 5) searches.pop(); // Keep last 5 searches
+      if (searches.length > 5) searches.pop(); 
       localStorage.setItem("recentSearches", JSON.stringify(searches));
     }
   };
-
-  // const fetchWeatherData = async (cityName) => {
-  //   try {
-  //     const response = await axios.get("http://api.weatherapi.com/v1/current.json", {
-  //       params: {
-  //         key: "YOUR_API_KEY", // Replace with your WeatherAPI key
-  //         q: cityName,
-  //       },
-  //     });
-  //     setWeatherData(response.data);
-  //     fetchWeeklyWeather(cityName); // Fetch weekly forecast
-  //     setError(null); // Clear errors
-  //     saveToLocalStorage(cityName); // Save the searched city
-  //   } catch (err) {
-  //     setError("City not found or network issue.");
-  //     setWeatherData(null);
-  //   }
-  // };
-
-  // // Fetch 7-day forecast
-  // const fetchWeeklyWeather = async (cityName) => {
-  //   try {
-  //     const response = await axios.get("http://api.weatherapi.com/v1/forecast.json", {
-  //       params: {
-  //         key: "YOUR_API_KEY",
-  //         q: cityName,
-  //         days: 7, // Get a 7-day forecast
-  //       },
-  //     });
-  //     setWeeklyForecast(response.data.forecast.forecastday);
-  //   } catch (err) {
-  //     console.error("Error fetching weekly forecast", err);
-  //   }
-  // };
-
-  // // Geolocation: Get weather for user's current location
-  // const fetchWeatherForCurrentLocation = () => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       async (position) => {
-  //         const { latitude, longitude } = position.coords;
-  //         const response = await axios.get("http://api.weatherapi.com/v1/current.json", {
-  //           params: {
-  //             key: "YOUR_API_KEY",
-  //             q: `${latitude},${longitude}`,
-  //           },
-  //         });
-  //         setWeatherData(response.data);
-  //         fetchWeeklyWeather(`${latitude},${longitude}`); // Fetch weekly forecast
-  //         setError(null);
-  //       },
-  //       () => {
-  //         setError("Unable to retrieve your location.");
-  //       }
-  //     );
-  //   } else {
-  //     setError("Geolocation is not supported by this browser.");
-  //   }
-  // };
 
   const fetchWeatherData = async (cityName) => {
     try {
