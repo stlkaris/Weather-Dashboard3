@@ -1,7 +1,7 @@
 const WeeklyForecast = ({ forecast }) => {
     return (
       <div className="flex flex-col items-center justify-center mt-8">
-        <h2 className="text-2xl font-bold mb-4">7-Day Forecast</h2>
+        <h2 className="text-2xl font-bold text-white mb-4">7-Day Forecast</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {forecast.map((day) => (
             <div key={day.date} className="p-4 bg-white dark:bg-gray-700 dark:text-white rounded-md shadow">
