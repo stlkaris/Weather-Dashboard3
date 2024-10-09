@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import WeatherCard from "./components/WeatherCard";
-import WeeklyForecast from "./components/WeeklyForecast"; 
+import WeeklyForecast from "./components/WeeklyForecast";
+import SearchBar from "./components/SearchBar"; // Import the SearchBar component
 
 const App = () => {
   const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
-  const [weeklyForecast, setWeeklyForecast] = useState(null); 
+  const [weeklyForecast, setWeeklyForecast] = useState(null);
   const [error, setError] = useState(null);
-  const [darkMode, setDarkMode] = useState(false); 
+  const [darkMode, setDarkMode] = useState(false);
 
-  const getRecentSearches = () => JSON.parse(localStorage.getItem("recentSearches")) || [];
+  const getRecentSearches = () =>
+    JSON.parse(localStorage.getItem("recentSearches")) || [];
 
   const saveToLocalStorage = (cityName) => {
     const searches = getRecentSearches();
     if (!searches.includes(cityName)) {
       searches.unshift(cityName);
-      if (searches.length > 5) searches.pop(); 
+      if (searches.length > 5) searches.pop();
       localStorage.setItem("recentSearches", JSON.stringify(searches));
     }
   };
 
   const fetchWeatherData = async (cityName) => {
     try {
-      const response = await axios.get("https://api.weatherapi.com/v1/current.json", { 
-        params: {
-          key: "9a54a0b6585443e1bfb182245240410",
-          q: cityName,
-        },
-      });
+      const response = await axios.get(
+        "https://api.weatherapi.com/v1/current.json",
+        {
+          params: {
+            key: "9a54a0b6585443e1bfb182245240410",
+            q: cityName,
+          },
+        }
+      );
       setWeatherData(response.data);
       fetchWeeklyWeather(cityName);
       setError(null);
@@ -38,33 +43,39 @@ const App = () => {
       setWeatherData(null);
     }
   };
-  
+
   const fetchWeeklyWeather = async (cityName) => {
     try {
-      const response = await axios.get("https://api.weatherapi.com/v1/forecast.json", { 
-        params: {
-          key: "9a54a0b6585443e1bfb182245240410",
-          q: cityName,
-          days: 7,
-        },
-      });
+      const response = await axios.get(
+        "https://api.weatherapi.com/v1/forecast.json",
+        {
+          params: {
+            key: "9a54a0b6585443e1bfb182245240410",
+            q: cityName,
+            days: 7,
+          },
+        }
+      );
       setWeeklyForecast(response.data.forecast.forecastday);
     } catch (err) {
       console.error("Error fetching weekly forecast", err);
     }
   };
-  
+
   const fetchWeatherForCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-          const response = await axios.get("https://api.weatherapi.com/v1/current.json", { 
-            params: {
-              key: "9a54a0b6585443e1bfb182245240410",
-              q: `${latitude},${longitude}`,
-            },
-          });
+          const response = await axios.get(
+            "https://api.weatherapi.com/v1/current.json",
+            {
+              params: {
+                key: "9a54a0b6585443e1bfb182245240410",
+                q: `${latitude},${longitude}`,
+              },
+            }
+          );
           setWeatherData(response.data);
           fetchWeeklyWeather(`${latitude},${longitude}`);
           setError(null);
@@ -87,7 +98,10 @@ const App = () => {
     if (city) fetchWeatherData(city);
   };
 
- 
+  const handleInputChange = (e) => {
+    setCity(e.target.value);
+  };
+
   const toggleDarkMode = () => setDarkMode(!darkMode);
 
   return (
@@ -108,21 +122,11 @@ const App = () => {
         </h1>
 
         {/* Search bar */}
-        <form onSubmit={handleSearch} className="flex space-x-2 mb-6 justify-center">
-          <input
-            type="text"
-            placeholder="Enter city name"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="p-3 rounded-l-md rounded-border outline-none dark:bg-gray-600 dark:text-white"
-          />
-          <button
-            type="submit"
-            className="p-3 bg-blue-500 text-white rounded-r-md hover:bg-blue-700"
-          >
-            Search
-          </button>
-        </form>
+        <SearchBar
+          city={city}
+          handleSearch={handleSearch}
+          handleInputChange={handleInputChange}
+        />
 
         {/* Recent searches */}
         <div className="flex justify-center space-x-4 mb-6">
@@ -138,7 +142,9 @@ const App = () => {
         </div>
 
         {/* Error handling */}
-        {error && <div className="text-red-500 dark:text-red-400 mb-4">{error}</div>}
+        {error && (
+          <div className="text-red-500 dark:text-red-400 mb-4">{error}</div>
+        )}
 
         {/* Weather card */}
         {weatherData && <WeatherCard data={weatherData} />}
